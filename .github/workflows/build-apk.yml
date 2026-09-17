@@ -24,13 +24,14 @@ jobs:
         run: npm install
       - name: Prepare web assets
         run: |
+          rm -rf www android
           mkdir -p www
           cp index.html style.css app.js www/
       - name: Create Android project
         run: npx cap add android
       - name: Sync Android project
         run: npx cap sync android
-      - name: Add Android permissions and install settings
+      - name: Configure Android package
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -45,16 +46,18 @@ jobs:
               s = s.replace('<application', perms + '<application', 1)
           p.write_text(s)
           PY
-      - name: Build debug APK
+      - name: Build standalone APK
         working-directory: android
         run: ./gradlew clean assembleDebug
-      - name: Verify APK
+      - name: Verify signed APK
         run: |
-          test -f android/app/build/outputs/apk/debug/app-debug.apk
-          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify --verbose android/app/build/outputs/apk/debug/app-debug.apk
-      - name: Upload APK
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -f "$APK"
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify --verbose "$APK"
+          cp "$APK" DRC-Virtual-Golf-Caddie.apk
+      - name: Upload phone install APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-INSTALL-TEST
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-6
+          path: DRC-Virtual-Golf-Caddie.apk
           if-no-files-found: error
