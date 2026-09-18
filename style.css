@@ -51,3 +51,6 @@ html{font-size:14px}
 .units-btn{padding:7px;font-size:.78rem}
 textarea{min-height:60px}
 .bnav{height:56px;min-height:56px}.bnav-btn{font-size:.5rem}.bnav-btn span{font-size:1rem}
+
+.antiglare-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.antiglare-row span{display:flex;flex-direction:column}.antiglare-row b{font-size:.72rem}.antiglare-row small{font-size:.58rem;color:#667581}.antiglare-row button{width:72px;border:1px solid #b0bcc8;border-radius:8px;padding:6px}
+body.antiglare{filter:none;background:#d9e0e5;color:#031f42}body.antiglare .card,body.antiglare .dist-card,body.antiglare .side-tab,body.antiglare input,body.antiglare textarea{background:#f5f1e7;border-color:#7c8994}body.antiglare .header,body.antiglare .bnav{background:#d2d7da}body.antiglare .header-title,body.antiglare .section-title,body.antiglare small{color:#334d64}body.antiglare .antiglare-row button{background:#082b57;color:#fff}
