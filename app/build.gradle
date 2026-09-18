@@ -10,7 +10,7 @@ android {
         release {
             storeFile file(System.getenv('DRC_KEYSTORE_FILE') ?: 'drc-release-key.jks')
             storePassword System.getenv('DRC_KEYSTORE_PASSWORD')
-            keyAlias System.getenv('DRC_KEY_ALIAS') ?: 'drc-golf'
+            keyAlias System.getenv('DRC_KEY_ALIAS')
             keyPassword System.getenv('DRC_KEY_PASSWORD')
         }
     }
