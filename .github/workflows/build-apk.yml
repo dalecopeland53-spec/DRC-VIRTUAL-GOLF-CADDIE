@@ -46,18 +46,56 @@ jobs:
               s = s.replace('<application', perms + '<application', 1)
           p.write_text(s)
           PY
-      - name: Build release APK
+      - name: Restore permanent signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          test -n "$SIGNING_KEY"
+          printf '%s' "$SIGNING_KEY" | base64 --decode > android/app/drc-release-key.jks
+          test -s android/app/drc-release-key.jks
+
+      - name: Configure permanent release signing
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_PASSWORD"
+          test -n "$KEY_PASSWORD"
+          printf 'DRC_RELEASE_STORE_FILE=drc-release-key.jks\n' >> android/gradle.properties
+          printf 'DRC_RELEASE_STORE_PASSWORD=%s\n' "$KEYSTORE_PASSWORD" >> android/gradle.properties
+          printf 'DRC_RELEASE_KEY_PASSWORD=%s\n' "$KEY_PASSWORD" >> android/gradle.properties
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle')
+          s=p.read_text()
+          if 'DRC_RELEASE_STORE_FILE' not in s:
+              s=s.replace('android {', """android {
+    signingConfigs {
+        release {
+            storeFile file(DRC_RELEASE_STORE_FILE)
+            storePassword DRC_RELEASE_STORE_PASSWORD
+            keyAlias 'drc-golf-alias'
+            keyPassword DRC_RELEASE_KEY_PASSWORD
+        }
+    }""", 1)
+          s=s.replace('release {\n', 'release {\n            signingConfig signingConfigs.release\n', 1)
+          p.write_text(s)
+          PY
+
+      - name: Build signed release APK
         working-directory: android
         run: ./gradlew clean assembleRelease
-      - name: Verify release APK exists
+      - name: Verify signed release APK
         run: |
-          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          APK=android/app/build/outputs/apk/release/app-release.apk
           test -f "$APK"
           test -s "$APK"
-          cp "$APK" DRC-Virtual-Golf-Caddie-Build-9-Release-Unsigned.apk
-      - name: Upload Build 9 release APK
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          cp "$APK" DRC-Virtual-Golf-Caddie-Signed-Release.apk
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-9-RELEASE-UNSIGNED
-          path: DRC-Virtual-Golf-Caddie-Build-9-Release-Unsigned.apk
+          name: DRC-VIRTUAL-GOLF-CADDIE-SIGNED-RELEASE
+          path: DRC-Virtual-Golf-Caddie-Signed-Release.apk
           if-no-files-found: error
