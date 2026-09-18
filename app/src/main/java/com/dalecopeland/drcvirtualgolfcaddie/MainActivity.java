@@ -3,6 +3,8 @@ package com.dalecopeland.drcvirtualgolfcaddie;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.graphics.Color;
+import androidx.core.view.WindowCompat;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
@@ -21,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Edge-to-edge shell: app background continues behind Android system bars.
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
 
         webView = new WebView(this);
         setContentView(webView);
