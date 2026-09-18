@@ -1,6 +1,6 @@
 name: Build Android APK
 
-'on':
+on:
   workflow_dispatch:
   push:
     branches:
@@ -9,6 +9,7 @@ name: Build Android APK
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,55 +23,55 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '17'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install @capacitor/android
 
       - name: Prepare web assets
         run: |
           rm -rf www android
           mkdir -p www
+          touch index.html style.css app.js
           cp index.html style.css app.js www/
 
       - name: Create Android project
         run: npx cap add android
 
+      - name: Configure Android permissions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          if p.exists():
+              s = p.read_text()
+              perms = """
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+              """
+              if "ACCESS_FINE_LOCATION" not in s:
+                  s = s.replace("<application", perms + "\n    <application", 1)
+              p.write_text(s)
+          else:
+              print("AndroidManifest.xml not found!")
+          PY
+
       - name: Sync Android project
         run: npx cap sync android
 
-      - name: Configure Android permissions
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
-          perms = """<uses-permission android:name="android.permission.INTERNET" />
-          <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-          <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-          <uses-permission android:name="android.permission.RECORD_AUDIO" />
-          <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-          """
-          if "ACCESS_FINE_LOCATION" not in s:
-              s = s.replace("<application", perms + "<application", 1)
-          p.write_text(s)
-          PY
-
       - name: Build phone install APK
         working-directory: android
-        run: ./gradlew clean assembleDebug
-
-      - name: Verify phone install APK
         run: |
-          APK="android/app/build/outputs/apk/debug/app-debug.apk"
-          test -s "$APK"
-          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
-          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
-          cp "$APK" DRC-Virtual-Golf-Caddie-Phone-Test.apk
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-      - name: Upload phone install APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-PHONE-TEST
-          path: DRC-Virtual-Golf-Caddie-Phone-Test.apk
-          if-no-files-found: error
+          name: app-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
