@@ -54,10 +54,10 @@ jobs:
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           test -f "$APK"
           $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify --verbose "$APK"
-          cp "$APK" DRC-Virtual-Golf-Caddie.apk
+          cp "$APK" DRC-Virtual-Golf-Caddie-Build-7.apk
       - name: Upload phone install APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-6
-          path: DRC-Virtual-Golf-Caddie.apk
+          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-7
+          path: DRC-Virtual-Golf-Caddie-Build-7.apk
           if-no-files-found: error
