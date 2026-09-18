@@ -173,3 +173,12 @@ textarea{min-height:48px!important;padding:5px 7px!important}
  .header{height:36px!important;min-height:36px!important}
  .bnav{height:46px!important;min-height:46px!important}
 }
+
+/* Build 32 — fixed physical-looking top/bottom safety clearance */
+:root{--drc-edge-clearance:46px}
+body{padding-top:var(--drc-edge-clearance)!important;padding-bottom:var(--drc-edge-clearance)!important;box-sizing:border-box!important}
+.view{height:calc(100vh - (var(--drc-edge-clearance) * 2))!important;max-height:calc(100vh - (var(--drc-edge-clearance) * 2))!important;overflow:hidden!important}
+.bnav{bottom:var(--drc-edge-clearance)!important}
+@media (max-height:760px){
+ :root{--drc-edge-clearance:40px}
+}
