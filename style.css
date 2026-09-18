@@ -15,3 +15,18 @@
 .scroll-content{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
 .bnav{position:relative;z-index:20;min-height:64px;margin-bottom:env(safe-area-inset-bottom)}
 @media(max-height:800px){.scroll-content{padding-bottom:calc(96px + env(safe-area-inset-bottom))}}
+
+/* Compact Caddie screen */
+#caddieView .scroll-content{gap:7px;padding-top:8px}
+#caddieView .card{padding:9px}
+#caddieView .caddie-ask{padding:8px}
+#caddieView .caddie-ask .section-title{margin-bottom:2px}
+#caddieView .pete-btn{width:58px;height:58px;font-size:1.45rem;margin:4px auto}
+#caddieView #peteStatus{font-size:.78rem;line-height:1.1}
+#caddieView .calc-grid{gap:5px;margin-bottom:6px}
+#caddieView .calc-grid label{font-size:.58rem}
+#caddieView .calc-grid input{padding:6px;height:34px}
+#caddieView .btn-primary{padding:9px}
+#caddieView #peteResponseCard{padding:9px;font-size:.78rem;line-height:1.25}
+#caddieView #peteResponseText{font-weight:800;color:#082b57;margin-bottom:4px}
+#caddieView #peteHeardText{font-size:.7rem;color:#526b84}
