@@ -63,6 +63,15 @@ jobs:
       - name: Sync App System
         run: npx cap sync android
 
+      - name: APK install diagnostics
+        run: |
+          echo "===== AndroidManifest.xml ====="
+          cat android/app/src/main/AndroidManifest.xml
+          echo "===== variables.gradle ====="
+          cat android/variables.gradle
+          echo "===== app build.gradle ====="
+          cat android/app/build.gradle
+
       - name: Compile and Bundle Package
         working-directory: android
         run: |
