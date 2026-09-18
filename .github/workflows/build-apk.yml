@@ -46,3 +46,5 @@ jobs:
           name: DRC-Virtual-Golf-Caddie-Native
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+# Build trigger: confirmed installable native baseline
