@@ -46,18 +46,18 @@ jobs:
               s = s.replace('<application', perms + '<application', 1)
           p.write_text(s)
           PY
-      - name: Build standalone APK
+      - name: Build release APK
         working-directory: android
-        run: ./gradlew clean assembleDebug
-      - name: Verify signed APK
+        run: ./gradlew clean assembleRelease
+      - name: Verify release APK exists
         run: |
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
           test -f "$APK"
-          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify --verbose "$APK"
-          cp "$APK" DRC-Virtual-Golf-Caddie-Build-7.apk
-      - name: Upload phone install APK
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/test -s "$APK"
+          cp "$APK" DRC-Virtual-Golf-Caddie-Build-8-Release-Unsigned.apk
+      - name: Upload Build 8 release APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-7
+          name: DRC-VIRTUAL-GOLF-CADDIE-BUILD-8-RELEASE-UNSIGNED
           path: DRC-Virtual-Golf-Caddie-Build-7.apk
           if-no-files-found: error
