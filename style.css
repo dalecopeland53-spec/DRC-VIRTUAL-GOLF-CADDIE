@@ -193,3 +193,13 @@ textarea{min-height:48px!important;padding:5px 7px!important}
 #homeView .btn-primary{height:38px!important;min-height:38px!important;margin-bottom:0!important}
 #homeView .scroll-content{padding-bottom:48px!important}
 #homeView .bnav{margin-top:0!important}
+
+/* Build 35 — structural Home fix: one flex region above fixed bottom nav */
+#homeView{position:fixed!important;inset:0 0 48px 0!important;height:auto!important;min-height:0!important;max-height:none!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+#homeView .home-shell{flex:1!important;min-height:0!important;display:flex!important;width:100%!important;padding:0 8px!important;box-sizing:border-box!important}
+#homeView .home-hero{flex:1!important;min-height:0!important;width:100%!important;display:flex!important;flex-direction:column!important;padding:30px 10px 0!important;box-sizing:border-box!important}
+#homeView .hero-top{flex:0 0 auto!important}
+#homeView .home-greeting,#homeView .home-tagline{flex:0 0 auto!important}
+#homeView .course-card{flex:1 1 auto!important;min-height:0!important;margin-bottom:5px!important}
+#homeView .course-ready{height:auto!important;min-height:0!important;padding:0!important;margin:0!important}
+#homeView .btn-primary{flex:0 0 38px!important;height:38px!important;min-height:38px!important;margin:0!important}
