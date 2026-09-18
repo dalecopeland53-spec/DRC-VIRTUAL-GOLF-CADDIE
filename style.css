@@ -184,3 +184,12 @@ textarea{min-height:48px!important;padding:5px 7px!important}
 #homeView .course-ready h2{font-size:1rem!important;margin:2px 0!important}
 #homeView .course-ready p{font-size:.7rem!important;margin:1px 0!important}
 #homeView .btn-primary{height:38px!important;min-height:38px!important}
+
+/* Build 34 — approved Home geometry */
+#homeView .home-hero{padding-top:30px!important;padding-bottom:0!important;min-height:0!important}
+#homeView .hero-top{margin-bottom:8px!important}
+#homeView .home-greeting{margin-top:10px!important}
+#homeView .course-ready{height:205px!important;min-height:205px!important;margin-bottom:5px!important}
+#homeView .btn-primary{height:38px!important;min-height:38px!important;margin-bottom:0!important}
+#homeView .scroll-content{padding-bottom:48px!important}
+#homeView .bnav{margin-top:0!important}
