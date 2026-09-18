@@ -20,7 +20,7 @@ jobs:
 
       - name: Restore permanent DRC signing key
         env:
-          DRC_KEYSTORE_BASE64: ${{ secrets.DRC_KEYSTORE_BASE64 }}
+          DRC_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEY }}
         run: |
           test -n "$DRC_KEYSTORE_BASE64"
           echo "$DRC_KEYSTORE_BASE64" | base64 --decode > app/drc-release-key.jks
@@ -33,9 +33,9 @@ jobs:
       - name: Build signed release APK
         env:
           DRC_KEYSTORE_FILE: drc-release-key.jks
-          DRC_KEYSTORE_PASSWORD: ${{ secrets.DRC_KEYSTORE_PASSWORD }}
-          DRC_KEY_ALIAS: ${{ secrets.DRC_KEY_ALIAS }}
-          DRC_KEY_PASSWORD: ${{ secrets.DRC_KEY_PASSWORD }}
+          DRC_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          DRC_KEY_ALIAS: drc-golf
+          DRC_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           test -n "$DRC_KEYSTORE_PASSWORD"
           test -n "$DRC_KEY_PASSWORD"
