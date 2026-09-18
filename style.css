@@ -174,11 +174,13 @@ textarea{min-height:48px!important;padding:5px 7px!important}
  .bnav{height:46px!important;min-height:46px!important}
 }
 
-/* Build 32 — fixed physical-looking top/bottom safety clearance */
-:root{--drc-edge-clearance:46px}
-body{padding-top:var(--drc-edge-clearance)!important;padding-bottom:var(--drc-edge-clearance)!important;box-sizing:border-box!important}
-.view{height:calc(100vh - (var(--drc-edge-clearance) * 2))!important;max-height:calc(100vh - (var(--drc-edge-clearance) * 2))!important;overflow:hidden!important}
-.bnav{bottom:var(--drc-edge-clearance)!important}
-@media (max-height:760px){
- :root{--drc-edge-clearance:40px}
-}
+
+/* Build 33 — compact the interface itself; no artificial blank bands */
+#homeView .home-hero{padding:6px 10px 7px!important}
+#homeView .home-greeting{font-size:.88rem!important;line-height:1!important;margin:2px 0!important}
+#homeView .home-tagline{font-size:1.38rem!important;line-height:.98!important;margin:2px 0 6px!important}
+#homeView .course-ready{min-height:0!important;height:220px!important;padding:8px!important;margin:0 0 6px!important}
+#homeView .course-ready .flag-icon{font-size:1.2rem!important;margin:0!important}
+#homeView .course-ready h2{font-size:1rem!important;margin:2px 0!important}
+#homeView .course-ready p{font-size:.7rem!important;margin:1px 0!important}
+#homeView .btn-primary{height:38px!important;min-height:38px!important}
