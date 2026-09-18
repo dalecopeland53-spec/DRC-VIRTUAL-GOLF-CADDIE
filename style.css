@@ -109,3 +109,11 @@ body.antiglare .wind-marker{background:#082b57;color:#fff;border-color:#fff}
 #roundView .card{overflow:hidden}
 
 .caddie-conversation{display:grid;gap:6px;margin-top:7px}.caddie-conversation>div{border:1px solid #aab8c5;border-radius:8px;padding:7px 9px;background:#f7f9fa}.caddie-conversation small{display:block;font-size:.58rem;font-weight:900;color:#60758a;margin-bottom:2px}.caddie-conversation p{margin:0;font-size:.78rem;line-height:1.25;font-weight:800;color:#082b57}.caddie-conversation>div:last-child{border-left:4px solid #0b78c8}
+
+/* Build 29: compact More menu */
+#moreView .scroll-content{padding:6px 10px 70px!important;gap:4px!important}
+#moreView .more-menu{gap:4px!important}
+#moreView .more-menu button{height:38px!important;min-height:38px!important;padding:3px 9px!important;border-radius:8px!important;grid-template-columns:24px 1fr 16px!important;font-size:.72rem!important}
+#moreView .more-menu button b{font-size:.78rem!important}
+#moreView .more-menu button span{font-size:.9rem!important}
+#moreView .advice-only-row{min-height:38px!important;padding:4px 9px!important;margin-bottom:4px!important}
