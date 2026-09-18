@@ -117,3 +117,29 @@ body.antiglare .wind-marker{background:#082b57;color:#fff;border-color:#fff}
 #moreView .more-menu button b{font-size:.78rem!important}
 #moreView .more-menu button span{font-size:.9rem!important}
 #moreView .advice-only-row{min-height:38px!important;padding:4px 9px!important;margin-bottom:4px!important}
+
+/* Build 30 — app-wide compact responsive baseline (~5.8in class) */
+:root{--drc-max:430px;--drc-gap:6px;--drc-control:38px;--drc-card-pad:8px}
+body{font-size:14px}
+.view{width:100%;max-width:var(--drc-max);margin:0 auto}
+.header,.bnav{width:100%;max-width:var(--drc-max);margin-left:auto;margin-right:auto}
+.scroll-content{width:100%;max-width:var(--drc-max);margin:0 auto;padding:7px 9px calc(66px + env(safe-area-inset-bottom))!important;gap:var(--drc-gap)!important}
+.card{padding:var(--drc-card-pad)!important;margin-bottom:0!important}
+button,input,select{min-height:var(--drc-control);box-sizing:border-box}
+input,select,textarea{font-size:16px}
+.section-title{font-size:.64rem!important;margin-bottom:4px!important}
+@media (max-width:380px){
+ :root{--drc-gap:4px;--drc-control:35px;--drc-card-pad:6px}
+ body{font-size:13px}
+ .scroll-content{padding-left:6px!important;padding-right:6px!important}
+}
+@media (min-width:431px){
+ body{background:#dfe5e9}
+ .view{box-shadow:0 0 18px rgba(0,0,0,.08)}
+}
+@media (max-height:700px){
+ :root{--drc-gap:4px;--drc-control:34px;--drc-card-pad:6px}
+ .scroll-content{padding-top:4px!important}
+ .header{min-height:42px!important}
+ .bnav{height:50px!important;min-height:50px!important}
+}
