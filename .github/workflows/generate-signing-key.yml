@@ -1,0 +1,45 @@
+name: Generate Permanent Signing Key
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Generate permanent Android signing keystore
+        env:
+          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          test -n "$STORE_PASS"
+          test -n "$KEY_PASS"
+          keytool -genkeypair -v \
+            -keystore DRC-Virtual-Golf-Caddie-release-key.jks \
+            -storepass "$STORE_PASS" \
+            -keypass "$KEY_PASS" \
+            -alias drc-golf-alias \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=DRC Virtual Golf Caddie, O=DRC, C=AU"
+
+      - name: Verify keystore
+        env:
+          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          keytool -list -keystore DRC-Virtual-Golf-Caddie-release-key.jks -storepass "$STORE_PASS" -alias drc-golf-alias
+
+      - name: Upload permanent signing key
+        uses: actions/upload-artifact@v4
+        with:
+          name: DRC-VIRTUAL-GOLF-CADDIE-PERMANENT-SIGNING-KEY
+          path: DRC-Virtual-Golf-Caddie-release-key.jks
+          if-no-files-found: error
+          retention-days: 1
