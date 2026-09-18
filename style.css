@@ -90,3 +90,20 @@ body.antiglare .wind-marker{background:#082b57;color:#fff;border-color:#fff}
 #homeView .course-ready h2{font-size:1.25rem!important;margin:2px 0!important}
 #homeView .course-ready p{font-size:.78rem!important;margin:2px 0!important}
 #homeView .btn-primary{min-height:44px!important;padding:7px!important;font-size:.95rem!important}
+
+/* Build 27: Round layout repair */
+#roundView .scroll-content{padding:5px 8px 74px!important;gap:5px!important;overflow-x:hidden}
+#roundView .round-grid{display:grid!important;grid-template-columns:minmax(0,44%) minmax(0,56%)!important;gap:7px!important;align-items:start}
+#roundView .hole-map{width:100%!important;min-width:0!important;height:330px!important}
+#roundView .round-side{min-width:0!important;width:100%!important}
+#roundView .info-row{display:grid!important;grid-template-columns:24px 1fr!important;align-items:center!important;gap:4px!important;padding:3px 0!important;font-size:.72rem!important}
+#roundView .info-row b{font-size:.68rem!important;white-space:nowrap}
+#roundView .info-row small{grid-column:2;font-size:.68rem!important;margin-top:-3px!important}
+#roundView .target-row{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:3px!important;margin:5px 0!important}
+#roundView .target{width:auto!important;min-width:0!important;height:42px!important;padding:3px!important;font-size:.72rem!important;line-height:1!important}
+#roundView .target small{font-size:.5rem!important}
+#roundView .shot-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important}
+#roundView .shot-controls button,#roundView .compass-btn{width:auto!important;min-width:0!important;height:32px!important;padding:3px 4px!important;font-size:.62rem!important;line-height:1!important;white-space:nowrap!important}
+#roundView button{box-sizing:border-box}
+#roundView .wind-marker{max-width:92%!important;font-size:.66rem!important;line-height:1.05!important;padding:5px 7px!important}
+#roundView .card{overflow:hidden}
