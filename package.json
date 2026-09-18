@@ -1,16 +1,75 @@
-{
-  "name": "drc-virtual-golf-caddie",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "android:add": "npx cap add android",
-    "android:sync": "npx cap sync android"
-  },
-  "dependencies": {
-    "@capacitor/android": "^7.4.3",
-    "@capacitor/core": "^7.4.3"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^7.4.3"
-  }
+#!/bin/bash
+set -e 
+
+echo "🚀 Starting Android build patching sequence for Capacitor 7..." 
+
+### 1. Sync and generate the native Android platform folder
+
+echo "📦 Running Capacitor sync..."
+npm run android:sync 
+
+### In Capacitor 7, the default app-level Gradle build file location
+
+GRADLE_PATH="android/app/build.gradle" 
+
+### 2. Use a Node.js inline script to patch the Gradle file accurately
+
+echo "📝 Patching build.gradle settings for Galaxy S24 Ultra compatibility..."
+node -e "
+const fs = require('fs');
+const file = '$GRADLE_PATH'; 
+
+if (!fs.existsSync(file)) {
+console.error('❌ Error: build.gradle not found at ' + file);
+process.exit(1);
+} 
+
+let content = fs.readFileSync(file, 'utf8'); 
+
+// Modern target & compile SDK configurations (Android 14+ / API 34+ required)
+content = content.replace(/compileSdk\s+\d+/, 'compileSdk 34');
+content = content.replace(/targetSdk\s+\d+/, 'targetSdk 34'); 
+
+// Inject the custom signingConfigs block directly into the android closure
+const signingConfigTemplate = `
+signingConfigs {
+release {
+storeFile file(System.getenv(\"MY_RELEASE_KEYSTORE_PATH\") ?: \"release.keystore\")
+storePassword System.getenv(\"MY_RELEASE_KEYSTORE_PASSWORD\")
+keyAlias System.getenv(\"MY_RELEASE_KEY_ALIAS\")
+keyPassword System.getenv(\"MY_RELEASE_KEY_PASSWORD\")
+v1SigningEnabled true
+v2SigningEnabled true
 }
+}
+`; 
+
+if (!content.includes('signingConfigs {')) {
+content = content.replace(/android\s*{/, 'android {' + signingConfigTemplate);
+} 
+
+// Attach the signing configuration to the release build type block safely
+const releaseBuildTypeRegex = /(buildTypes\s*{\s*release\s*{)/;
+if (content.match(releaseBuildTypeRegex) && !content.includes('signingConfig signingConfigs.release')) {
+content = content.replace(releaseBuildTypeRegex, '$1\n            signingConfig signingConfigs.release');
+} 
+
+fs.writeFileSync(file, content, 'utf8');
+console.log('✅ Successfully injected Capacitor 7 signing configuration and SDK targets.');
+" 
+
+### 3. Print logs out for validation inside your pipeline
+
+echo "🔍 Verifying generated configurations..."
+echo "--- Package & SDK Configs ---"
+grep -E "applicationId|compileSdk|targetSdk" "$GRADLE_PATH" || true
+echo "--- Signing Blocks ---"
+grep -A 10 "signingConfigs" "$GRADLE_PATH" || true 
+
+### 4. Navigate into the native directory and execute the build
+
+echo "🏗️ Building the release APK..."
+cd android
+./gradlew assembleRelease 
+
+echo "🎉 Build complete! Your production-ready APK is prepared for the S24 Ultra."
