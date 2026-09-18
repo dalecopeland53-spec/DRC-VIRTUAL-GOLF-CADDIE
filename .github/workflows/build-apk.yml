@@ -25,6 +25,15 @@ jobs:
           test -n "$DRC_KEYSTORE_BASE64"
           echo "$DRC_KEYSTORE_BASE64" | base64 --decode > app/drc-release-key.jks
 
+      - name: Detect signing key alias
+        env:
+          DRC_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          ALIAS=$(keytool -list -v -keystore app/drc-release-key.jks -storepass "$DRC_KEYSTORE_PASSWORD" 2>/dev/null | sed -n 's/^Alias name: //p' | head -1)
+          test -n "$ALIAS"
+          echo "DRC_KEY_ALIAS=$ALIAS" >> "$GITHUB_ENV"
+          echo "Signing alias detected."
+
       - name: Copy DRC app into Android assets
         run: |
           mkdir -p app/src/main/assets
@@ -34,7 +43,7 @@ jobs:
         env:
           DRC_KEYSTORE_FILE: drc-release-key.jks
           DRC_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          DRC_KEY_ALIAS: drc-golf
+          DRC_KEY_ALIAS: ${{ env.DRC_KEY_ALIAS }}
           DRC_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           test -n "$DRC_KEYSTORE_PASSWORD"
