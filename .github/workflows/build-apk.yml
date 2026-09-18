@@ -28,40 +28,52 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Copy web files into www/
+      - name: Copy web files into www
         run: |
           mkdir -p www
-          cp index.html www/
-          cp app.js www/
-          cp style.css www/
+          cp index.html app.js style.css www/
 
-      - name: Fix capacitor webDir to www
+      - name: Set Capacitor webDir
         run: |
-          node -e "
-            const fs = require('fs');
-            const cfg = JSON.parse(fs.readFileSync('capacitor.config.json','utf8'));
-            cfg.webDir = 'www';
-            fs.writeFileSync('capacitor.config.json', JSON.stringify(cfg, null, 2));
-          "
+          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('capacitor.config.json','utf8'));c.webDir='www';fs.writeFileSync('capacitor.config.json',JSON.stringify(c,null,2));"
 
       - name: Add Android platform
         run: npx cap add android
 
-      - name: Sync web assets into Android
+      - name: Sync Android
         run: npx cap sync android
 
-      - name: Add permissions to AndroidManifest.xml
+      - name: Add Android permissions
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if ! grep -q "INTERNET" "$MANIFEST"; then
+          if ! grep -q "ACCESS_FINE_LOCATION" "$MANIFEST"; then
             sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n\n    <application|' "$MANIFEST"
           fi
+
+      - name: Show generated Android configuration
+        run: |
+          echo "===== capacitor.config.json ====="
+          cat capacitor.config.json
+          echo "===== android/app/build.gradle ====="
+          cat android/app/build.gradle
+          echo "===== AndroidManifest.xml ====="
+          cat android/app/src/main/AndroidManifest.xml
 
       - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+
+      - name: Verify APK signing and package
+        run: |
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          echo "===== APK FILE ====="
+          ls -lh "$APK"
+          echo "===== APK SIGNATURE ====="
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner" verify --verbose --print-certs "$APK"
+          echo "===== APK PACKAGE ====="
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/aapt" dump badging "$APK" | head -20
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
