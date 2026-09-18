@@ -30,3 +30,24 @@
 #caddieView #peteResponseCard{padding:9px;font-size:.78rem;line-height:1.25}
 #caddieView #peteResponseText{font-weight:800;color:#082b57;margin-bottom:4px}
 #caddieView #peteHeardText{font-size:.7rem;color:#526b84}
+
+/* Professional compact density pass */
+html{font-size:14px}
+.header{min-height:46px;padding:5px 10px}
+.header-logo{font-size:1rem;padding:4px 8px}
+.header-title{font-size:.88rem}
+.back-btn{padding:6px 9px;font-size:.82rem}
+.scroll-content{padding:8px;gap:7px;padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+.card{padding:8px;border-radius:10px}
+.section-title{font-size:.64rem;margin-bottom:4px}
+.btn-primary{padding:9px;font-size:.82rem}
+.home-hero{padding:12px}.home-tile{padding:10px;font-size:1.15rem}
+.hole-header{padding:5px 9px}.hole-num{font-size:1.05rem}.hole-nav-btn{height:38px}
+.dist-card{padding:5px 3px}.dist-card b{font-size:1.18rem}
+.club-row{padding:4px 0;min-height:36px}.club-row-name{font-size:.82rem}.step-btn{width:25px;height:25px;font-size:.8rem}.step-val{min-width:32px;font-size:.82rem}
+.sc-table{font-size:.64rem}.sc-table th,.sc-table td{padding:4px 2px}
+.step-item{padding:6px;margin-bottom:4px;border-radius:8px}.step-text{font-size:.78rem}.step-item>div:last-child>div:last-child{font-size:.66rem}
+.profile-card b{font-size:1rem}.settings-card{gap:6px}.settings-card input{padding:6px}
+.units-btn{padding:7px;font-size:.78rem}
+textarea{min-height:60px}
+.bnav{height:56px;min-height:56px}.bnav-btn{font-size:.5rem}.bnav-btn span{font-size:1rem}
