@@ -23,3 +23,7 @@ function updateWindMarker(){
  if(d==='HEAD'||d==='N'){deg=180;label='HEAD'}else if(d==='TAIL'||d==='S'){deg=0;label='TAIL'}else if(d.includes('L')&&d.includes('R')){deg=d.indexOf('L')<d.indexOf('R')?90:-90;label=d.indexOf('L')<d.indexOf('R')?'L→R':'R→L'}
  ar.style.transform='rotate('+deg+'deg)';tx.textContent=(weatherWind||0)+' km/h '+label;
 }
+
+function applyAdviceOnly(){let on=localStorage.getItem('drcAdviceOnly')==='1';document.body.classList.toggle('advice-only',on);let b=document.getElementById('adviceOnlyBtn');if(b)b.textContent=on?'ON':'OFF'}
+function toggleAdviceOnly(){let on=localStorage.getItem('drcAdviceOnly')!=='1';localStorage.setItem('drcAdviceOnly',on?'1':'0');applyAdviceOnly()}
+applyAdviceOnly();
