@@ -11,67 +11,66 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '20'
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '21'
 
-      - name: Install dependencies
+      - name: Force Clean App Infrastructure
+        run: |
+          rm -rf www android node_modules package-lock.json
+
+      - name: Install clean Capacitor infrastructure
         run: |
           npm install
-          npm install @capacitor/android
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      - name: Prepare web assets
+      - name: Build Web Assets Mirror
         run: |
-          rm -rf www android
           mkdir -p www
-          touch index.html style.css app.js
           cp index.html style.css app.js www/
 
-      - name: Create Android project
+      - name: Scaffold Native Studio Wrappers
         run: npx cap add android
 
-      - name: Configure Android permissions
+      - name: Inject Hardware Permissions
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path("android/app/src/main/AndroidManifest.xml")
-          if p.exists():
-              s = p.read_text()
-              perms = """
-              <uses-permission android:name="android.permission.INTERNET" />
-              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-              <uses-permission android:name="android.permission.RECORD_AUDIO" />
-              <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-              """
-              if "ACCESS_FINE_LOCATION" not in s:
-                  s = s.replace("<application", perms + "\n    <application", 1)
-              p.write_text(s)
-          else:
-              print("AndroidManifest.xml not found!")
+          s = p.read_text()
+          perms = """
+          <uses-permission android:name="android.permission.INTERNET" />
+          <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+          <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+          <uses-permission android:name="android.permission.RECORD_AUDIO" />
+          <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+          """
+          if "ACCESS_FINE_LOCATION" not in s:
+              s = s.replace("<application", perms + "\n    <application", 1)
+          p.write_text(s)
           PY
 
-      - name: Sync Android project
+      - name: Sync App System
         run: npx cap sync android
 
-      - name: Build phone install APK
+      - name: Compile and Bundle Package
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK Artifact
+      - name: Export Ready APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
+          name: s24-ultra-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
