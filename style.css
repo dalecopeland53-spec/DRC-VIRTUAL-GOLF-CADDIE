@@ -65,3 +65,7 @@ body.antiglare{filter:none;background:#d9e0e5;color:#031f42}body.antiglare .card
 .minimal-nav .bnav-btn span{font-size:1rem!important}
 .round-glare{width:34px;height:30px;padding:0;border:1px solid #91a0ad;border-radius:8px;background:linear-gradient(#fff,#e4eaee);color:#082b57;font-size:.9rem;font-weight:900}
 body.antiglare .round-glare{background:#082b57;color:#fff;border-color:#082b57}
+
+.wind-marker{position:absolute;top:8px;right:8px;z-index:8;display:flex;align-items:center;gap:4px;padding:4px 6px;border:1px solid #8ea0af;border-radius:9px;background:rgba(255,255,255,.9);color:#082b57;font-size:.62rem;font-weight:900;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.wind-marker span{display:inline-block;font-size:1.15rem;line-height:1;transform-origin:center}
+body.antiglare .wind-marker{background:#082b57;color:#fff;border-color:#fff}
