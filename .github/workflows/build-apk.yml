@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Native Android APK
 
 on:
   workflow_dispatch:
@@ -9,75 +9,40 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: temurin
+          java-version: '17'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
 
-      - name: Copy web files into www
+      - name: Copy DRC app into Android assets
         run: |
-          mkdir -p www
-          cp index.html app.js style.css www/
+          mkdir -p app/src/main/assets
+          cp index.html app.js style.css app/src/main/assets/
 
-      - name: Set Capacitor webDir
+      - name: Build native debug APK
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Verify APK package and signature
         run: |
-          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('capacitor.config.json','utf8'));c.webDir='www';fs.writeFileSync('capacitor.config.json',JSON.stringify(c,null,2));"
-
-      - name: Add Android platform
-        run: npx cap add android
-
-      - name: Sync Android
-        run: npx cap sync android
-
-      - name: Add Android permissions
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if ! grep -q "ACCESS_FINE_LOCATION" "$MANIFEST"; then
-            sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n\n    <application|' "$MANIFEST"
-          fi
-
-      - name: Show generated Android configuration
-        run: |
-          echo "===== capacitor.config.json ====="
-          cat capacitor.config.json
-          echo "===== android/app/build.gradle ====="
-          cat android/app/build.gradle
-          echo "===== AndroidManifest.xml ====="
-          cat android/app/src/main/AndroidManifest.xml
-
-      - name: Build debug APK
-        working-directory: android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-
-      - name: Verify APK signing and package
-        run: |
-          APK="android/app/build/outputs/apk/debug/app-debug.apk"
-          echo "===== APK FILE ====="
+          APK="app/build/outputs/apk/debug/app-debug.apk"
           ls -lh "$APK"
-          echo "===== APK SIGNATURE ====="
-          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner" verify --verbose --print-certs "$APK"
-          echo "===== APK PACKAGE ====="
-          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/aapt" dump badging "$APK" | head -20
+          BUILD_TOOLS="$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          "$ANDROID_HOME/build-tools/$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/$BUILD_TOOLS/aapt" dump badging "$APK" | head -20
 
-      - name: Upload APK artifact
+      - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-Virtual-Golf-Caddie-S24-Ultra
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: DRC-Virtual-Golf-Caddie-Native
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
