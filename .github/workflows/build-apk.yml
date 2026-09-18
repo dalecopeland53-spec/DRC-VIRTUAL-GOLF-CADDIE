@@ -25,61 +25,47 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Force Clean App Infrastructure
-        run: |
-          rm -rf www android node_modules package-lock.json
+      - name: Install dependencies
+        run: npm install
 
-      - name: Install clean Capacitor infrastructure
-        run: |
-          npm install
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-
-      - name: Build Web Assets Mirror
+      - name: Copy web files into www/
         run: |
           mkdir -p www
-          cp index.html style.css app.js www/
+          cp index.html www/
+          cp app.js www/
+          cp style.css www/
 
-      - name: Scaffold Native Studio Wrappers
+      - name: Fix capacitor webDir to www
+        run: |
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('capacitor.config.json','utf8'));
+            cfg.webDir = 'www';
+            fs.writeFileSync('capacitor.config.json', JSON.stringify(cfg, null, 2));
+          "
+
+      - name: Add Android platform
         run: npx cap add android
 
-      - name: Inject Hardware Permissions
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          s = p.read_text()
-          perms = """
-          <uses-permission android:name="android.permission.INTERNET" />
-          <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-          <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-          <uses-permission android:name="android.permission.RECORD_AUDIO" />
-          <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-          """
-          if "ACCESS_FINE_LOCATION" not in s:
-              s = s.replace("<application", perms + "\n    <application", 1)
-          p.write_text(s)
-          PY
-
-      - name: Sync App System
+      - name: Sync web assets into Android
         run: npx cap sync android
 
-      - name: APK install diagnostics
+      - name: Add permissions to AndroidManifest.xml
         run: |
-          echo "===== AndroidManifest.xml ====="
-          cat android/app/src/main/AndroidManifest.xml
-          echo "===== variables.gradle ====="
-          cat android/variables.gradle
-          echo "===== app build.gradle ====="
-          cat android/app/build.gradle
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          if ! grep -q "INTERNET" "$MANIFEST"; then
+            sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n\n    <application|' "$MANIFEST"
+          fi
 
-      - name: Compile and Bundle Package
+      - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Export Ready APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: s24-ultra-debug-apk
+          name: DRC-Virtual-Golf-Caddie-S24-Ultra
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
