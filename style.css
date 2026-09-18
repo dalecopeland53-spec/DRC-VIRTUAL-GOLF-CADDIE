@@ -143,3 +143,33 @@ input,select,textarea{font-size:16px}
  .header{min-height:42px!important}
  .bnav{height:50px!important;min-height:50px!important}
 }
+
+/* Build 31 — compact vertical scale, app-wide */
+:root{--drc-gap:4px;--drc-control:32px;--drc-card-pad:5px}
+.header{min-height:38px!important;height:38px!important;padding:2px 7px!important}
+.header-title{font-size:.78rem!important;line-height:1!important}
+.header-logo{font-size:.78rem!important;padding:2px 5px!important}
+.back-btn{min-height:30px!important;height:30px!important;padding:2px 7px!important;font-size:.72rem!important}
+.scroll-content{padding-top:4px!important;gap:4px!important}
+.card{padding:5px 7px!important;border-radius:8px!important}
+button{min-height:32px!important}
+input,select{min-height:32px!important;padding:3px 7px!important}
+textarea{min-height:48px!important;padding:5px 7px!important}
+.btn-primary{min-height:34px!important;padding:4px 7px!important;font-size:.78rem!important}
+.bnav{height:48px!important;min-height:48px!important}
+.bnav-btn{padding:2px!important;font-size:.46rem!important;line-height:1!important}
+.bnav-btn span{font-size:.9rem!important;margin-bottom:1px!important}
+#moreView .more-menu{gap:3px!important}
+#moreView .more-menu button{height:32px!important;min-height:32px!important;padding:2px 7px!important;border-radius:7px!important;grid-template-columns:21px 1fr 13px!important;font-size:.66rem!important}
+#moreView .more-menu button b{font-size:.7rem!important}
+#moreView .more-menu button span{font-size:.78rem!important}
+#moreView .advice-only-row{height:32px!important;min-height:32px!important;padding:2px 7px!important;margin-bottom:3px!important}
+#caddieView .card{margin-bottom:4px!important}
+#caddieView .section-title{margin-bottom:2px!important}
+#caddieView input{height:34px!important;min-height:34px!important}
+#caddieView .btn-primary{height:36px!important;min-height:36px!important}
+@media (max-height:760px){
+ :root{--drc-control:30px;--drc-card-pad:4px}
+ .header{height:36px!important;min-height:36px!important}
+ .bnav{height:46px!important;min-height:46px!important}
+}
