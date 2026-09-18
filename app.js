@@ -48,7 +48,7 @@ function drcShotBrief(distance,lie,windDir,pin){
   play=Math.max(1,Math.round(play));
   const club=nearestClub(play);
   const cross=wd.includes('L')&&wd.includes('R')?(wd.indexOf('L')<wd.indexOf('R')?' Allow for left-to-right wind.':' Allow for right-to-left wind.'):'';
-  return play+' '+(units==='YARDS'?'yards':'metres')+' playing distance. '+club+'. '+(reason.length?'Allow for '+reason.join(', ')+'. ':'')+cross+' Make your normal swing.';
+  return play+' '+(units==='YARDS'?'yards':'metres')+' playing distance. '+club+'. '+(reason.length?'Allow for '+reason.join(', ')+'. ':'')+cross+drcResultAdjustment()+' Make your normal swing.';
 }
 
 function giveRoundAdvice(){
@@ -57,4 +57,16 @@ function giveRoundAdvice(){
  const msg=drcShotBrief(d,selectedLie,selectedWindDir,pin);
  const el=document.getElementById('roundAdviceText');if(el)el.textContent=msg;
  if(typeof speak==='function')speak(msg);
+}
+
+function rememberShotResult(result){
+ localStorage.setItem('drcLastShotResult',String(result||'').toUpperCase());
+}
+function drcResultAdjustment(){
+ const r=localStorage.getItem('drcLastShotResult')||'';
+ if(r==='SHORT')return ' Last shot finished short; confirm strike and consider one more club.';
+ if(r==='LONG')return ' Last shot finished long; consider one less club if conditions are unchanged.';
+ if(r==='LEFT')return ' Last shot missed left; keep the same routine and check start line.';
+ if(r==='RIGHT')return ' Last shot missed right; keep the same routine and check start line.';
+ return '';
 }
