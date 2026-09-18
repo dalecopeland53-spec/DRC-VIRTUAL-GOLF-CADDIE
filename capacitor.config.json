@@ -1,8 +1,15 @@
 {
   "appId": "com.dalecopeland.drcvirtualgolfcaddie",
   "appName": "DRC Virtual Golf Caddie",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "hostname": "dalecopeland.com",
+    "cleartext": false
+  },
+  "android": {
+    "buildOptions": {
+      "releaseType": "APK"
+    }
   }
 }
