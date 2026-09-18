@@ -27,3 +27,10 @@ function updateWindMarker(){
 function applyAdviceOnly(){let on=localStorage.getItem('drcAdviceOnly')==='1';document.body.classList.toggle('advice-only',on);let b=document.getElementById('adviceOnlyBtn');if(b)b.textContent=on?'ON':'OFF'}
 function toggleAdviceOnly(){let on=localStorage.getItem('drcAdviceOnly')!=='1';localStorage.setItem('drcAdviceOnly',on?'1':'0');applyAdviceOnly()}
 applyAdviceOnly();
+
+function previewScorecard(input){
+ const img=document.getElementById('scorecardPreview'),st=document.getElementById('scanStatus');
+ const f=input&&input.files&&input.files[0]; if(!f){if(st)st.textContent='No scorecard selected';return}
+ if(img){img.src=URL.createObjectURL(f);img.style.display='block'}
+ if(st)st.textContent='Scorecard ready to check';
+}
