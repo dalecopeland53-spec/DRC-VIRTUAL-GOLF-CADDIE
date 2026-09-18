@@ -8,3 +8,5 @@
 .hole-map.shape-wide .hole-fairway{clip-path:polygon(34% 0,66% 0,79% 30%,67% 58%,88% 100%,12% 100%,33% 58%,21% 30%)}
 .hole-map.shape-s .hole-fairway{clip-path:polygon(40% 0,63% 0,75% 18%,54% 36%,38% 52%,60% 68%,74% 100%,30% 100%,42% 70%,22% 52%,45% 34%,30% 18%)}
 .hole-map.shape-short .hole-fairway{height:68%;width:40%;clip-path:polygon(35% 0,65% 0,72% 30%,62% 60%,78% 100%,22% 100%,38% 60%,28% 30%)}
+
+.routine-edit{gap:7px;padding-top:9px}.routine-hint{text-align:center;font-size:.66rem;font-weight:800;letter-spacing:1.2px;color:#526b84;margin-bottom:2px}.routine-field{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center}.routine-num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#082b57;color:#fff;font-weight:900;font-size:.75rem}.routine-field input{height:38px;border:1.5px solid #b0bcc8;border-radius:9px;background:#fff;color:#082b57;padding:6px 9px;font-size:.82rem}.routine-save{margin-top:3px;padding:9px}.routine-edit #routineSaved{text-align:center;font-size:.7rem;font-weight:800;color:#238848}
