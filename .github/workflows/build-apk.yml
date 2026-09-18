@@ -56,38 +56,21 @@ jobs:
           p.write_text(s)
           PY
 
-      - name: Build unsigned release APK
+      - name: Build phone install APK
         working-directory: android
-        run: ./gradlew clean assembleRelease
+        run: ./gradlew clean assembleDebug
 
-      - name: Restore signing key
-        env:
-          SIGNING_KEY_B64: ${{ secrets.SIGNING_KEY }}
+      - name: Verify phone install APK
         run: |
-          test -n "$SIGNING_KEY_B64"
-          printf '%s' "$SIGNING_KEY_B64" | base64 --decode > release-key.jks
-          test -s release-key.jks
-
-      - name: Sign release APK
-        env:
-          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          test -n "$STORE_PASS"
-          test -n "$KEY_PASS"
-          UNSIGNED="android/app/build/outputs/apk/release/app-release-unsigned.apk"
-          ALIGNED="android/app/build/outputs/apk/release/app-release-aligned.apk"
-          SIGNED="DRC-Virtual-Golf-Caddie-Signed-Release.apk"
-          test -s "$UNSIGNED"
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
-          "$BUILD_TOOLS/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
-          "$BUILD_TOOLS/apksigner" sign --ks release-key.jks --ks-key-alias drc-golf-alias --ks-pass env:STORE_PASS --key-pass env:KEY_PASS --out "$SIGNED" "$ALIGNED"
-          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$SIGNED"
-          test -s "$SIGNED"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          cp "$APK" DRC-Virtual-Golf-Caddie-Phone-Test.apk
 
-      - name: Upload signed APK
+      - name: Upload phone install APK
         uses: actions/upload-artifact@v4
         with:
-          name: DRC-VIRTUAL-GOLF-CADDIE-SIGNED-RELEASE
-          path: DRC-Virtual-Golf-Caddie-Signed-Release.apk
+          name: DRC-VIRTUAL-GOLF-CADDIE-PHONE-TEST
+          path: DRC-Virtual-Golf-Caddie-Phone-Test.apk
           if-no-files-found: error
