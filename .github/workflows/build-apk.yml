@@ -3,7 +3,8 @@ name: Build Android APK
 'on':
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-apk:
@@ -11,89 +12,80 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+
       - name: Install dependencies
         run: npm install
+
       - name: Prepare web assets
         run: |
           rm -rf www android
           mkdir -p www
           cp index.html style.css app.js www/
+
       - name: Create Android project
         run: npx cap add android
+
       - name: Sync Android project
         run: npx cap sync android
-      - name: Configure Android package
+
+      - name: Configure Android permissions
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('android/app/src/main/AndroidManifest.xml')
+          p = Path("android/app/src/main/AndroidManifest.xml")
           s = p.read_text()
-          perms = '''<uses-permission android:name="android.permission.INTERNET" />
+          perms = """<uses-permission android:name="android.permission.INTERNET" />
           <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
           <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
           <uses-permission android:name="android.permission.RECORD_AUDIO" />
-          <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n'''
-          if 'ACCESS_FINE_LOCATION' not in s:
-              s = s.replace('<application', perms + '<application', 1)
-          p.write_text(s)
-          PY
-      - name: Restore permanent signing key
-        env:
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-        run: |
-          test -n "$SIGNING_KEY"
-          printf '%s' "$SIGNING_KEY" | base64 --decode > android/app/drc-release-key.jks
-          test -s android/app/drc-release-key.jks
-
-      - name: Configure permanent release signing
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          test -n "$KEYSTORE_PASSWORD"
-          test -n "$KEY_PASSWORD"
-          printf 'DRC_RELEASE_STORE_FILE=drc-release-key.jks\n' >> android/gradle.properties
-          printf 'DRC_RELEASE_STORE_PASSWORD=%s\n' "$KEYSTORE_PASSWORD" >> android/gradle.properties
-          printf 'DRC_RELEASE_KEY_PASSWORD=%s\n' "$KEY_PASSWORD" >> android/gradle.properties
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('android/app/build.gradle')
-          s=p.read_text()
-          if 'DRC_RELEASE_STORE_FILE' not in s:
-              s=s.replace('android {', """android {
-    signingConfigs {
-        release {
-            storeFile file(DRC_RELEASE_STORE_FILE)
-            storePassword DRC_RELEASE_STORE_PASSWORD
-            keyAlias 'drc-golf-alias'
-            keyPassword DRC_RELEASE_KEY_PASSWORD
-        }
-    }""", 1)
-          s=s.replace('release {\n', 'release {\n            signingConfig signingConfigs.release\n', 1)
+          <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+          """
+          if "ACCESS_FINE_LOCATION" not in s:
+              s = s.replace("<application", perms + "<application", 1)
           p.write_text(s)
           PY
 
-      - name: Build signed release APK
+      - name: Build unsigned release APK
         working-directory: android
         run: ./gradlew clean assembleRelease
-      - name: Verify signed release APK
+
+      - name: Restore signing key
+        env:
+          SIGNING_KEY_B64: ${{ secrets.SIGNING_KEY }}
         run: |
-          APK=android/app/build/outputs/apk/release/app-release.apk
-          test -f "$APK"
-          test -s "$APK"
-          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
-          "$APKSIGNER" verify --verbose --print-certs "$APK"
-          cp "$APK" DRC-Virtual-Golf-Caddie-Signed-Release.apk
-      - name: Upload signed release APK
+          test -n "$SIGNING_KEY_B64"
+          printf '%s' "$SIGNING_KEY_B64" | base64 --decode > release-key.jks
+          test -s release-key.jks
+
+      - name: Sign release APK
+        env:
+          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          test -n "$STORE_PASS"
+          test -n "$KEY_PASS"
+          UNSIGNED="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          ALIGNED="android/app/build/outputs/apk/release/app-release-aligned.apk"
+          SIGNED="DRC-Virtual-Golf-Caddie-Signed-Release.apk"
+          test -s "$UNSIGNED"
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          "$BUILD_TOOLS/apksigner" sign --ks release-key.jks --ks-key-alias drc-golf-alias --ks-pass env:STORE_PASS --key-pass env:KEY_PASS --out "$SIGNED" "$ALIGNED"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$SIGNED"
+          test -s "$SIGNED"
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
           name: DRC-VIRTUAL-GOLF-CADDIE-SIGNED-RELEASE
