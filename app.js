@@ -34,3 +34,19 @@ function previewScorecard(input){
  if(img){img.src=URL.createObjectURL(f);img.style.display='block'}
  if(st)st.textContent='Scorecard ready to check';
 }
+
+function drcShotBrief(distance,lie,windDir,pin){
+  const d=Number(distance)||0, w=Number(weatherWind)||0;
+  let play=d, reason=[];
+  const wd=String(windDir||'').toUpperCase(), l=String(lie||'Fairway');
+  if(wd.includes('HEAD')){play+=w*.8;reason.push('wind into you')}
+  else if(wd.includes('TAIL')){play-=w*.5;reason.push('wind helping')}
+  if(/DEEP ROUGH/i.test(l)){play+=8;reason.push('deep rough')}
+  else if(/LIGHT ROUGH|ROUGH/i.test(l)){play+=4;reason.push('rough')}
+  if(/BACK/i.test(pin||'')){play+=5;reason.push('back pin')}
+  else if(/FRONT/i.test(pin||'')){play-=4;reason.push('front pin')}
+  play=Math.max(1,Math.round(play));
+  const club=nearestClub(play);
+  const cross=wd.includes('L')&&wd.includes('R')?(wd.indexOf('L')<wd.indexOf('R')?' Allow for left-to-right wind.':' Allow for right-to-left wind.'):'';
+  return play+' '+(units==='YARDS'?'yards':'metres')+' playing distance. '+club+'. '+(reason.length?'Allow for '+reason.join(', ')+'. ':'')+cross+' Make your normal swing.';
+}
