@@ -50,3 +50,11 @@ function drcShotBrief(distance,lie,windDir,pin){
   const cross=wd.includes('L')&&wd.includes('R')?(wd.indexOf('L')<wd.indexOf('R')?' Allow for left-to-right wind.':' Allow for right-to-left wind.'):'';
   return play+' '+(units==='YARDS'?'yards':'metres')+' playing distance. '+club+'. '+(reason.length?'Allow for '+reason.join(', ')+'. ':'')+cross+' Make your normal swing.';
 }
+
+function giveRoundAdvice(){
+ const d=(typeof distance!=='undefined'&&distance)||document.getElementById('manualDistance')?.value||0;
+ const pin=document.getElementById('pinPosition')?.value||'Center';
+ const msg=drcShotBrief(d,selectedLie,selectedWindDir,pin);
+ const el=document.getElementById('roundAdviceText');if(el)el.textContent=msg;
+ if(typeof speak==='function')speak(msg);
+}
